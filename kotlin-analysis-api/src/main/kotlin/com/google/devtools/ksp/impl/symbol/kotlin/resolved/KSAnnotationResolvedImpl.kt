@@ -49,7 +49,7 @@ import org.jetbrains.kotlin.psi.KtFile
 /**
  * A resolved [KSAnnotation] backed directly by an Analysis API [KaAnnotation],
  * rather than a source PSI node ([KtAnnotationEntry][org.jetbrains.kotlin.psi.KtAnnotationEntry] or
- * [PsiAnnotation][com.intellij.psi.PsiAnnotation]).
+ * [PsiAnnotation][org.jetbrains.kotlin.com.intellij.psi.PsiAnnotation]).
  *
  * This implementation is used when annotations are resolved semantically or lack direct source PSI,
  * such as:

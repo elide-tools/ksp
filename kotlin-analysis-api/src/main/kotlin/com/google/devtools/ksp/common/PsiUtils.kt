@@ -18,13 +18,13 @@
 package com.google.devtools.ksp.common
 
 import com.google.devtools.ksp.symbol.*
-import com.intellij.lang.jvm.JvmModifier
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.kotlin.com.intellij.lang.jvm.JvmModifier
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.com.intellij.psi.PsiDocumentManager
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiMethod
+import org.jetbrains.kotlin.com.intellij.psi.PsiModifierListOwner
 
 val jvmModifierMap = mapOf(
     JvmModifier.PUBLIC to Modifier.PUBLIC,

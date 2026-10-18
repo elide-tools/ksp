@@ -17,7 +17,7 @@
 
 package com.google.devtools.ksp.common.impl
 
-import com.intellij.psi.PsiFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiFile
 
 // PsiElement.toLocation() isn't available before ResolveImpl is initialized.
 class KSPCompilationError(val file: PsiFile, val offset: Int, override val message: String) : Exception()

@@ -24,9 +24,9 @@ import com.google.devtools.ksp.impl.recordClassReferenceLookup
 import com.google.devtools.ksp.impl.symbol.java.KSValueArgumentLiteImpl
 import com.google.devtools.ksp.impl.symbol.java.calcValue
 import com.google.devtools.ksp.symbol.*
-import com.intellij.psi.PsiAnnotationMethod
-import com.intellij.psi.PsiClass
-import com.intellij.psi.impl.compiled.ClsClassImpl
+import org.jetbrains.kotlin.com.intellij.psi.PsiAnnotationMethod
+import org.jetbrains.kotlin.com.intellij.psi.PsiClass
+import org.jetbrains.kotlin.com.intellij.psi.impl.compiled.ClsClassImpl
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationValue

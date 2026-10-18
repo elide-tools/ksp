@@ -17,8 +17,8 @@
 
 package com.google.devtools.ksp.impl
 
-import com.intellij.mock.MockProject
-import com.intellij.psi.PsiDocumentManager
+import org.jetbrains.kotlin.com.intellij.mock.MockProject
+import org.jetbrains.kotlin.com.intellij.psi.PsiDocumentManager
 
 class KSPCoreEnvironment(internal val project: MockProject) {
     companion object {

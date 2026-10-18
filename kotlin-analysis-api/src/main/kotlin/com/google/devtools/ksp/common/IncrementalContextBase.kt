@@ -26,10 +26,10 @@ import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.visitor.KSDefaultVisitor
-import com.intellij.psi.PsiImportStatement
-import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.PsiPackage
-import com.intellij.util.containers.MultiMap
+import org.jetbrains.kotlin.com.intellij.psi.PsiImportStatement
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiPackage
+import org.jetbrains.kotlin.com.intellij.util.containers.MultiMap
 import java.io.Closeable
 import java.io.File
 import java.util.Date

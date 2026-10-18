@@ -18,11 +18,11 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 package com.google.devtools.ksp.standalone
 
-import com.intellij.core.CoreApplicationEnvironment
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
+import org.jetbrains.kotlin.com.intellij.openapi.module.Module
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.kotlin.com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.impl.base.util.LibraryUtils
@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.analysis.api.projectStructure.KaLibrarySourceModule
 import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.StandaloneProjectFactory
 import org.jetbrains.kotlin.analysis.project.structure.builder.KtBinaryModuleBuilder
 import org.jetbrains.kotlin.analysis.project.structure.builder.KtModuleBuilderDsl
-import org.jetbrains.kotlin.analysis.project.structure.builder.KtModuleProviderBuilder
+import org.jetbrains.kotlin.analysis.project.structure.builder.KaModuleContainerBuilder
 import org.jetbrains.kotlin.analysis.project.structure.impl.KaLibraryModuleImpl
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
@@ -75,7 +75,7 @@ open class KspLibraryModuleBuilder(
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun KtModuleProviderBuilder.buildKspLibraryModule(init: KspLibraryModuleBuilder.() -> Unit): KaLibraryModule {
+inline fun KaModuleContainerBuilder.buildKspLibraryModule(init: KspLibraryModuleBuilder.() -> Unit): KaLibraryModule {
     contract {
         callsInPlace(init, InvocationKind.EXACTLY_ONCE)
     }
@@ -116,7 +116,7 @@ public class KspSdkModuleBuilder(
 }
 
 @OptIn(ExperimentalContracts::class)
-public inline fun KtModuleProviderBuilder.buildKspSdkModule(init: KspSdkModuleBuilder.() -> Unit): KaLibraryModule {
+public inline fun KaModuleContainerBuilder.buildKspSdkModule(init: KspSdkModuleBuilder.() -> Unit): KaLibraryModule {
     contract {
         callsInPlace(init, InvocationKind.EXACTLY_ONCE)
     }

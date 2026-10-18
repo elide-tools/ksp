@@ -31,9 +31,9 @@ import com.google.devtools.ksp.impl.symbol.kotlin.render
 import com.google.devtools.ksp.impl.symbol.kotlin.toClassifierReference
 import com.google.devtools.ksp.impl.symbol.kotlin.toLocation
 import com.google.devtools.ksp.symbol.*
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiTypeParameter
-import com.intellij.psi.impl.source.PsiClassReferenceType
+import org.jetbrains.kotlin.com.intellij.psi.PsiClass
+import org.jetbrains.kotlin.com.intellij.psi.PsiTypeParameter
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.PsiClassReferenceType
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.types.*
 import org.jetbrains.kotlin.psi.KtClassOrObject

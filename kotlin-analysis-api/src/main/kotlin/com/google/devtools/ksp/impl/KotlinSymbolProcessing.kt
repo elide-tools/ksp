@@ -45,25 +45,27 @@ import com.google.devtools.ksp.standalone.buildKspSourceModule
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.Origin
-import com.intellij.core.CoreApplicationEnvironment
-import com.intellij.diagnostic.PluginException
-import com.intellij.diagnostic.PluginProblemReporter
-import com.intellij.mock.MockProject
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.vfs.StandardFileSystems
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.impl.jar.CoreJarFileSystem
-import com.intellij.psi.PsiFileSystemItem
-import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiTreeChangeAdapter
-import com.intellij.psi.PsiTreeChangeListener
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.ui.EDT
+import com.google.devtools.ksp.standalone.KspBuiltinsVirtualFileProvider
+import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProvider
+import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
+import org.jetbrains.kotlin.com.intellij.util.concurrency.TransferredWriteActionService
+import org.jetbrains.kotlin.com.intellij.diagnostic.PluginException
+import org.jetbrains.kotlin.com.intellij.diagnostic.PluginProblemReporter
+import org.jetbrains.kotlin.com.intellij.mock.MockProject
+import org.jetbrains.kotlin.com.intellij.openapi.Disposable
+import org.jetbrains.kotlin.com.intellij.openapi.application.ApplicationManager
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.StandardFileSystems
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.jar.CoreJarFileSystem
+import org.jetbrains.kotlin.com.intellij.psi.PsiFileSystemItem
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiManager
+import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeAdapter
+import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeListener
+import org.jetbrains.kotlin.com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.kotlin.com.intellij.util.ui.EDT
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaIdeApi
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
@@ -97,7 +99,8 @@ import org.jetbrains.kotlin.analysis.low.level.api.fir.api.getResolutionFacade
 import org.jetbrains.kotlin.analysis.low.level.api.fir.lazy.resolve.LLFirResolutionActivityTracker
 import org.jetbrains.kotlin.analysis.low.level.api.fir.providers.LLSealedInheritorsProvider
 import org.jetbrains.kotlin.analysis.project.structure.builder.KtModuleBuilder
-import org.jetbrains.kotlin.analysis.project.structure.builder.KtModuleProviderBuilder
+import org.jetbrains.kotlin.analysis.project.structure.builder.KaModuleContainerBuilder
+import org.jetbrains.kotlin.analysis.project.structure.impl.KotlinStandaloneProjectStructureProvider
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreApplicationEnvironmentMode
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreProjectEnvironment
@@ -156,6 +159,8 @@ class KotlinSymbolProcessing(
     private fun createAASession(
         projectDisposable: Disposable,
     ): Triple<StandaloneAnalysisAPISession, KotlinCoreProjectEnvironment, List<KaModule>> {
+        KspBuiltinsVirtualFileProvider.stdlib = kspConfig.libraries
+            .firstOrNull { it.name.startsWith("kotlin-stdlib") && it.extension == "jar" }?.absolutePath
         val kotlinCoreProjectEnvironment: KotlinCoreProjectEnvironment =
             StandaloneProjectFactory.createProjectEnvironment(
                 projectDisposable,
@@ -163,6 +168,24 @@ class KotlinSymbolProcessing(
             )
 
         val project: MockProject = kotlinCoreProjectEnvironment.project
+
+        // Newer IntelliJ fires PSI write events through this application service; standalone has no
+        // EDT to transfer to, so run in place.
+        val application = kotlinCoreProjectEnvironment.environment.application
+        if (KspBuiltinsVirtualFileProvider.stdlib != null) {
+            application.picoContainer.unregisterComponent(BuiltinsVirtualFileProvider::class.java.name)
+            application.registerService(BuiltinsVirtualFileProvider::class.java, KspBuiltinsVirtualFileProvider())
+        }
+        if (application.getServiceIfCreated(TransferredWriteActionService::class.java) == null &&
+            !application.hasComponent(TransferredWriteActionService::class.java)
+        ) {
+            application.registerService(
+                TransferredWriteActionService::class.java,
+                object : TransferredWriteActionService {
+                    override fun runOnEdtWithTransferredWriteActionAndWait(action: Runnable) = action.run()
+                },
+            )
+        }
 
         @Suppress("UnstableApiUsage")
         CoreApplicationEnvironment.registerExtensionPoint(
@@ -172,7 +195,7 @@ class KotlinSymbolProcessing(
         )
 
         // replaces buildKtModuleProviderByCompilerConfiguration(compilerConfiguration)
-        val projectStructureProvider = KtModuleProviderBuilder(
+        val moduleContainerBuilder = KaModuleContainerBuilder(
             kotlinCoreProjectEnvironment.environment, project
         ).apply {
             val platform = when (kspConfig) {
@@ -248,7 +271,12 @@ class KotlinSymbolProcessing(
             }.apply(::addModule)
 
             this.platform = platform
-        }.build()
+        }
+        val projectStructureProvider = KotlinStandaloneProjectStructureProvider(
+            moduleContainerBuilder.platform,
+            project,
+            moduleContainerBuilder.build(),
+        )
 
         // register services and build session
         val ktModuleProviderImpl = projectStructureProvider
@@ -295,6 +323,15 @@ class KotlinSymbolProcessing(
         CoreApplicationEnvironment.registerExtensionPoint(
             project.extensionArea, PsiTreeChangeListener.EP.name, PsiTreeChangeAdapter::class.java
         )
+        // Analysis API 2.5 notifies session listeners; standalone setup doesn't declare the point.
+        val sessionListenerEp = "org.jetbrains.kotlin.kaSessionListener"
+        for (area in listOf(project.extensionArea, ApplicationManager.getApplication().extensionArea)) {
+            if (!area.hasExtensionPoint(sessionListenerEp)) {
+                CoreApplicationEnvironment.registerExtensionPoint(
+                    area, sessionListenerEp, org.jetbrains.kotlin.analysis.api.platform.KaSessionListener::class.java
+                )
+            }
+        }
         return Triple(
             StandaloneAnalysisAPISession(kotlinCoreProjectEnvironment) {
                 // This is only used by kapt4, which should query a provider, instead of have it passed here IMHO.
@@ -754,12 +791,8 @@ fun TargetPlatform.getPlatformInfo(kspConfig: KSPConfig): List<PlatformInfo> =
 
 private fun <R> maybeRunInWriteAction(f: () -> R) {
     synchronized(EDT::class.java) {
-        if (!EDT.isCurrentThreadEdt())
-            EDT.updateEdt()
         if (ApplicationManager.getApplication() != null) {
-            runWriteAction {
-                f()
-            }
+            ApplicationManager.getApplication().runWriteAction(Runnable { f() })
         } else {
             f()
         }

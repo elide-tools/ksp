@@ -31,10 +31,10 @@ import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.Origin
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiJvmModifiersOwner
-import com.intellij.psi.PsiModifierListOwner
-import com.intellij.psi.util.parentOfType
+import org.jetbrains.kotlin.com.intellij.psi.PsiClass
+import org.jetbrains.kotlin.com.intellij.psi.PsiJvmModifiersOwner
+import org.jetbrains.kotlin.com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.kotlin.com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.symbols.KaBackingFieldSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaCallableSymbol
@@ -142,7 +142,7 @@ abstract class AbstractKSDeclarationImpl : KSDeclaration, Deferrable {
         analyze {
             ktDeclarationSymbol.containingSymbol?.let {
                 ktDeclarationSymbol.getContainingKSSymbol()
-            } ?: (ktDeclarationSymbol.psi?.parentOfType<PsiClass>(withSelf = false))?.namedClassSymbol?.let {
+            } ?: PsiTreeUtil.getParentOfType(ktDeclarationSymbol.psi, PsiClass::class.java, true)?.namedClassSymbol?.let {
                 KSClassDeclarationImpl.getCached(it)
             } ?: ktDeclarationSymbol.toContainingFile()
         }

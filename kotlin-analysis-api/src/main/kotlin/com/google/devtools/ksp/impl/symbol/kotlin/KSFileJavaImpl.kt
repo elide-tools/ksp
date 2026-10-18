@@ -28,7 +28,7 @@ import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSVisitor
 import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Origin
-import com.intellij.psi.PsiJavaFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaFile
 
 class KSFileJavaImpl private constructor(val psi: PsiJavaFile) : KSFile, Deferrable {
     companion object : KSObjectCache<PsiJavaFile, KSFileJavaImpl>() {

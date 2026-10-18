@@ -1,12 +1,15 @@
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 package com.google.devtools.ksp.standalone
 
-import com.intellij.core.CorePackageIndex
-import com.intellij.ide.highlighter.JavaFileType
-import com.intellij.openapi.roots.PackageIndex
-import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.impl.file.impl.JavaFileManager
-import com.intellij.psi.search.ProjectScope
+import org.jetbrains.kotlin.resolve.jvm.modules.JavaModuleFinder
+import org.jetbrains.kotlin.util.PerformanceManager
+import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
+import org.jetbrains.kotlin.com.intellij.core.CorePackageIndex
+import org.jetbrains.kotlin.com.intellij.ide.highlighter.JavaFileType
+import org.jetbrains.kotlin.com.intellij.openapi.roots.PackageIndex
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaFile
+import org.jetbrains.kotlin.com.intellij.psi.impl.file.impl.JavaFileManager
+import org.jetbrains.kotlin.com.intellij.psi.search.ProjectScope
 import org.jetbrains.kotlin.analysis.api.projectStructure.KaModule
 import org.jetbrains.kotlin.analysis.api.standalone.base.declarations.KotlinStandaloneJvmDependenciesIndex
 import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.StandaloneProjectFactory
@@ -51,7 +54,7 @@ class IncrementalJavaFileManager(val environment: KotlinCoreProjectEnvironment) 
         }
 
         val (roots, newSingleJavaFileRoots) = rootsWithSingleJavaFileRoots.partition { (file) ->
-            file.isDirectory || file.extension != JavaFileType.DEFAULT_EXTENSION
+            file.isDirectory || file.extension != "java"
         }
 
         singleJavaFileRoots.addAll(newSingleJavaFileRoots)
@@ -91,7 +94,9 @@ class IncrementalJavaFileManager(val environment: KotlinCoreProjectEnvironment) 
             rootsIndex,
             packagePartProviders,
             SingleJavaFileRootsIndex(singleJavaFileRoots),
-            true, null
+            true,
+            object : JavaModuleFinder { override fun findModule(name: String) = null },
+            object : PerformanceManager(JvmPlatforms.defaultJvmPlatform, "KSP") {},
         )
     }
 
@@ -101,7 +106,7 @@ class IncrementalJavaFileManager(val environment: KotlinCoreProjectEnvironment) 
         val allSourceFileRoots = sourceFiles.map { JavaRoot(it.virtualFile, JavaRoot.RootType.SOURCE) }
 
         val (roots, newSingleJavaFileRoots) = allSourceFileRoots.partition { (file) ->
-            file.isDirectory || file.extension != JavaFileType.DEFAULT_EXTENSION
+            file.isDirectory || file.extension != "java"
         }
 
         singleJavaFileRoots.addAll(newSingleJavaFileRoots)
@@ -134,7 +139,9 @@ class IncrementalJavaFileManager(val environment: KotlinCoreProjectEnvironment) 
             rootsIndex,
             packagePartProviders,
             SingleJavaFileRootsIndex(singleJavaFileRoots),
-            true, null
+            true,
+            object : JavaModuleFinder { override fun findModule(name: String) = null },
+            object : PerformanceManager(JvmPlatforms.defaultJvmPlatform, "KSP") {},
         )
     }
 }

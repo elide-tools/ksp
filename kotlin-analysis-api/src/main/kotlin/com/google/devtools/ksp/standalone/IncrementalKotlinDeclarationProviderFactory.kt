@@ -1,8 +1,8 @@
 package com.google.devtools.ksp.standalone
 
-import com.intellij.core.CoreApplicationEnvironment
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.KaPlatformInterface
 import org.jetbrains.kotlin.analysis.api.platform.declarations.KotlinCompositeDeclarationProvider

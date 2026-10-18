@@ -21,16 +21,16 @@ package com.google.devtools.ksp.impl
 
 import com.google.devtools.ksp.impl.symbol.kotlin.analyze
 import com.google.devtools.ksp.processing.KSPLogger
-import com.intellij.psi.JavaRecursiveElementWalkingVisitor
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiErrorElement
-import com.intellij.psi.PsiExpression
-import com.intellij.psi.PsiJavaCodeReferenceElement
-import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.PsiMethodReferenceExpression
-import com.intellij.psi.PsiReferenceExpression
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.kotlin.com.intellij.psi.JavaRecursiveElementWalkingVisitor
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiErrorElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiExpression
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaCodeReferenceElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiJavaFile
+import org.jetbrains.kotlin.com.intellij.psi.PsiMethodReferenceExpression
+import org.jetbrains.kotlin.com.intellij.psi.PsiReferenceExpression
+import org.jetbrains.kotlin.com.intellij.psi.javadoc.PsiDocComment
+import org.jetbrains.kotlin.com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.analysis.api.components.KaDiagnosticCheckerFilter
 import org.jetbrains.kotlin.analysis.api.diagnostics.KaSeverity
 import org.jetbrains.kotlin.psi.KtFile

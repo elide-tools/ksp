@@ -50,17 +50,16 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.intellij.psi.PsiAnnotation
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiField
-import com.intellij.psi.PsiMember
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiModifierListOwner
-import com.intellij.psi.PsiParameter
-import com.intellij.psi.PsiTypeParameter
-import com.intellij.psi.PsiTypeParameterList
-import com.intellij.util.containers.addIfNotNull
+import org.jetbrains.kotlin.com.intellij.psi.PsiAnnotation
+import org.jetbrains.kotlin.com.intellij.psi.PsiClass
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiField
+import org.jetbrains.kotlin.com.intellij.psi.PsiMember
+import org.jetbrains.kotlin.com.intellij.psi.PsiMethod
+import org.jetbrains.kotlin.com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.kotlin.com.intellij.psi.PsiParameter
+import org.jetbrains.kotlin.com.intellij.psi.PsiTypeParameter
+import org.jetbrains.kotlin.com.intellij.psi.PsiTypeParameterList
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationValue
 import org.jetbrains.kotlin.analysis.api.resolution.KaAnnotationCall
@@ -815,7 +814,7 @@ class PsiResolutionStrategy(
                         this@findTargetedSymbol.getGeneratedProperty()
                             ?.findTargetedSymbol(useSiteTarget, enableNewFeatures)
                             ?.let { symbols ->
-                                symbols.forEach { addIfNotNull(it) }
+                                symbols.forEach { it?.let(::add) }
                             }
                     }
                 }
@@ -824,11 +823,11 @@ class PsiResolutionStrategy(
                     // TODO: Add support for JvmRecord annotation according to KEEP 402
                     buildList {
                         add(this@findTargetedSymbol)
-                        addIfNotNull(this@findTargetedSymbol.getter)
-                        addIfNotNull(this@findTargetedSymbol.setter)
-                        addIfNotNull(this@findTargetedSymbol.setter?.parameter)
+                        this@findTargetedSymbol.getter?.let(::add)
+                        (this@findTargetedSymbol.setter)?.let(::add)
+                        (this@findTargetedSymbol.setter?.parameter)?.let(::add)
                         if (enableNewFeatures) {
-                            addIfNotNull(this@findTargetedSymbol.backingField)
+                            (this@findTargetedSymbol.backingField)?.let(::add)
                         }
                     }
 

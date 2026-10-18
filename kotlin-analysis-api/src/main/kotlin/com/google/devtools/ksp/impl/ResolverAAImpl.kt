@@ -111,9 +111,9 @@ import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.Origin
 import com.google.devtools.ksp.symbol.Variance
 import com.google.devtools.ksp.symbol.Visibility
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.impl.file.impl.JavaFileManager
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.com.intellij.psi.PsiMethod
+import org.jetbrains.kotlin.com.intellij.psi.impl.file.impl.JavaFileManager
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
 import org.jetbrains.kotlin.analysis.api.components.buildSubstitutor
@@ -855,7 +855,7 @@ class ResolverAAImpl(
     internal fun mapToJvmSignatureInternal(ksAnnotated: KSAnnotated): String? {
         fun KaType.toSignature(): String {
             return analyze {
-                this@toSignature.mapToJvmType().descriptor.let {
+                this@toSignature.mapToJvmTypeDescriptor().let {
                     when (it) {
                         "Ljava.lang.Void;" -> "Ljava/lang/Void;"
                         "Lkotlin/Unit;" -> "V"
