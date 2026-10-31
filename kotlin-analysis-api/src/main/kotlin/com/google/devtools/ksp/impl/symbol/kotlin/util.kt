@@ -146,6 +146,7 @@ import org.jetbrains.kotlin.name.JvmStandardClassIds.JVM_SUPPRESS_WILDCARDS_ANNO
 import org.jetbrains.kotlin.name.JvmStandardClassIds.JVM_WILDCARD_ANNOTATION_FQ_NAME
 import org.jetbrains.kotlin.name.NameUtils
 import org.jetbrains.kotlin.psi.KtAnnotated
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.types.Variance
@@ -182,11 +183,14 @@ internal fun mapAAOrigin(ktSymbol: KaSymbol): Origin {
     }
 }
 
+internal val KaAnnotation.explicitUseSiteTarget: AnnotationUseSiteTargetAA?
+    get() = (psi as? KtAnnotationEntry)?.useSiteTarget?.getAnnotationUseSiteTarget()
+
 internal fun KaAnnotation.render(): String {
     return buildString {
         append("@")
-        if (this@render.useSiteTarget != null) {
-            append(this@render.useSiteTarget!!.renderName + ":")
+        if (this@render.explicitUseSiteTarget != null) {
+            append(this@render.explicitUseSiteTarget!!.renderName + ":")
         }
         append(this@render.classId!!.shortClassName.asString())
         if (arguments.isNotEmpty()) {

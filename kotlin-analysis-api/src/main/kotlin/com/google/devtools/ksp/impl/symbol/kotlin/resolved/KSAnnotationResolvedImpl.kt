@@ -21,6 +21,7 @@ import com.google.devtools.ksp.common.KSObjectCache
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.impl.symbol.kotlin.KSValueArgumentImpl
 import com.google.devtools.ksp.impl.symbol.kotlin.analyze
+import com.google.devtools.ksp.impl.symbol.kotlin.explicitUseSiteTarget
 import com.google.devtools.ksp.impl.symbol.kotlin.getAbsentDefaultArguments
 import com.google.devtools.ksp.impl.symbol.kotlin.getDefaultArguments
 import com.google.devtools.ksp.symbol.AnnotationUseSiteTarget
@@ -121,7 +122,7 @@ class KSAnnotationResolvedImpl private constructor(
         if (parent?.origin == Origin.KOTLIN_LIB || parent?.origin == Origin.JAVA_LIB)
             return@lazy null
 
-        when (annotationApplication.useSiteTarget) {
+        when (annotationApplication.explicitUseSiteTarget) {
             null -> null
             FILE -> AnnotationUseSiteTarget.FILE
             PROPERTY -> AnnotationUseSiteTarget.PROPERTY

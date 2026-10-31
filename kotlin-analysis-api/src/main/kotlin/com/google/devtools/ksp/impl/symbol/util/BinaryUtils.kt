@@ -244,7 +244,8 @@ internal class DeclarationOrdering(
 
     override fun visitMethod(
         name: Name,
-        desc: String
+        desc: String,
+        exceptions: List<ClassId>
     ): KotlinJvmBinaryClass.MethodAnnotationVisitor? {
         methodOrdering.getOrPut(name.asString()) {
             mutableMapOf()

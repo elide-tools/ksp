@@ -11,7 +11,7 @@
 # Needs `elide` (or $ELIDE), a JDK 21+ ($JAVA_HOME or PATH), curl, unzip, and rclone for publish.
 set -euo pipefail
 
-KOTLIN=2.5.0-Beta1
+KOTLIN=2.5.0-Beta2
 VERSION=${VERSION:-$KOTLIN-elide.1}
 COROUTINES=1.8.0
 CAFFEINE=3.3.0
@@ -37,7 +37,7 @@ AA_ARTIFACTS=(
   analysis-api-platform-interface-for-ide analysis-api-standalone-for-ide low-level-api-fir-for-ide
   symbol-light-classes-for-ide
 )
-OPT_INS=org.jetbrains.kotlin.analysis.api.KaImplementationDetail,org.jetbrains.kotlin.analysis.api.KaExperimentalApi,org.jetbrains.kotlin.analysis.api.KaPlatformInterface,org.jetbrains.kotlin.analysis.api.KaNonPublicApi,org.jetbrains.kotlin.analysis.api.KaIdeApi
+OPT_INS=org.jetbrains.kotlin.analysis.api.KaImplementationDetail,org.jetbrains.kotlin.analysis.api.KaExperimentalApi,org.jetbrains.kotlin.analysis.api.KaPlatformInterface,org.jetbrains.kotlin.analysis.api.KaNonPublicApi,org.jetbrains.kotlin.analysis.api.KaIdeApi,org.jetbrains.kotlin.psi.KtPlatformInterface
 
 die() { echo "error: $*" >&2; exit 1; }
 
@@ -107,7 +107,7 @@ build() {
   unzip -Z1 "$common_ide" | grep -E '^org/jetbrains/kotlin/analysis/(decompiler|internal)/.*\.class$' \
     | grep -vxF -f <(unzip -Z1 "$emb") > "$BUILD/extracted.txt" || true
   [ -s "$BUILD/extracted.txt" ] || die "no decompiler classes found in $common_ide"
-  (cd "$extracted" && xargs -a "$BUILD/extracted.txt" unzip -q -o "$common_ide")
+  (cd "$extracted" && xargs unzip -q -o "$common_ide" < "$BUILD/extracted.txt")
   "$JAR" --create --date=2010-01-01T00:00:00Z --file "$BUILD/extracted.jar" -C "$extracted" .
 
   # Interfaces the Analysis API references that embeddable leaves out.
