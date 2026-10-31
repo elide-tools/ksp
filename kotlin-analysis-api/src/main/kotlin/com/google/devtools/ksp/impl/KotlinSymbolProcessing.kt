@@ -111,7 +111,6 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
-import org.jetbrains.kotlin.diagnostics.KtRegisteredDiagnosticFactoriesStorage
 import org.jetbrains.kotlin.fir.declarations.SealedClassInheritorsProvider
 import org.jetbrains.kotlin.fir.session.registerResolveComponents
 import org.jetbrains.kotlin.load.kotlin.PackagePartProvider
@@ -630,7 +629,6 @@ class KotlinSymbolProcessing(
                 // are created.
                 val firSession = ResolverAAImpl.ktModule.getResolutionFacade(project)
                 firSession.useSiteFirSession.registerResolveComponents(
-                    KtRegisteredDiagnosticFactoriesStorage(),
                     dualLookupTracker
                 )
 

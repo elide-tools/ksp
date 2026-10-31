@@ -1,7 +1,7 @@
 package com.google.devtools.ksp.standalone
 
 import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProvider
-import org.jetbrains.kotlin.analysis.decompiler.psi.BuiltinsVirtualFileProviderCliImpl
+import org.jetbrains.kotlin.analysis.api.standalone.base.projectStructure.BuiltinsVirtualFileProviderCliImpl
 import org.jetbrains.kotlin.com.intellij.openapi.module.Module
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.com.intellij.openapi.vfs.StandardFileSystems

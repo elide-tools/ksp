@@ -102,7 +102,7 @@ class KSPropertyDeclarationImpl private constructor(internal val ktPropertySymbo
             .plus(
                 // Handle delegate use-site target
                 ktPropertySymbol.backingFieldSymbol?.annotations
-                    ?.filter { it.useSiteTarget == KaDelegateTarget }
+                    ?.filter { it.explicitUseSiteTarget == KaDelegateTarget }
                     ?.asSequence()
                     ?: emptySequence()
             )
@@ -226,7 +226,7 @@ class KSPropertyDeclarationImpl private constructor(internal val ktPropertySymbo
                 null
 
     override fun isDelegated(): Boolean {
-        return ktPropertySymbol.isDelegatedProperty
+        return ktPropertySymbol.isDelegated
     }
 
     override fun findOverridee(): KSPropertyDeclaration? {
@@ -258,7 +258,7 @@ class KSPropertyDeclarationImpl private constructor(internal val ktPropertySymbo
 }
 
 internal fun KaAnnotation.isUseSiteTargetAnnotation(): Boolean {
-    return this.useSiteTarget?.let {
+    return this.explicitUseSiteTarget?.let {
         it == AnnotationUseSiteTarget.PROPERTY_GETTER ||
             it == AnnotationUseSiteTarget.PROPERTY_SETTER ||
             it == AnnotationUseSiteTarget.SETTER_PARAMETER ||

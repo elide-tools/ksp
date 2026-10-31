@@ -56,7 +56,7 @@ class KSClassDeclarationEnumEntryImpl private constructor(private val ktEnumEntr
             }
             recordLookupForGetAllFunctions(ktEnumEntrySymbol.returnType.directSupertypes.toList())
         }
-        return ktEnumEntrySymbol.enumEntryInitializer?.declarations()?.filterIsInstance<KSFunctionDeclaration>()
+        return ktEnumEntrySymbol.initializer?.declarations()?.filterIsInstance<KSFunctionDeclaration>()
             ?: emptySequence()
     }
 
@@ -67,7 +67,7 @@ class KSClassDeclarationEnumEntryImpl private constructor(private val ktEnumEntr
             }
             recordLookupForGetAllProperties(ktEnumEntrySymbol.returnType.directSupertypes.toList())
         }
-        return ktEnumEntrySymbol.enumEntryInitializer?.declarations()?.filterIsInstance<KSPropertyDeclaration>()
+        return ktEnumEntrySymbol.initializer?.declarations()?.filterIsInstance<KSPropertyDeclaration>()
             ?: emptySequence()
     }
 
