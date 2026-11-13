@@ -16,12 +16,14 @@
  */
 
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
+
 package com.google.devtools.ksp.standalone
 
 import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
 import org.jetbrains.kotlin.com.intellij.openapi.module.Module
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.jar.CoreJarFileSystem
 import org.jetbrains.kotlin.com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaImplementationDetail
@@ -84,16 +86,38 @@ inline fun KaModuleContainerBuilder.buildKspLibraryModule(init: KspLibraryModule
 
 internal class LibraryRootsSearchScope(roots: List<VirtualFile>) : GlobalSearchScope() {
     private val rootFiles: Set<VirtualFile> = roots.toSet()
+    private val jarRootUrls: Set<String> = roots.mapNotNullTo(HashSet()) { root ->
+        if (root.fileSystem is CoreJarFileSystem) root.url else null
+    }
 
     override fun contains(file: VirtualFile): Boolean {
+        if (rootFiles.isEmpty()) {
+            // Early return to avoid going through while-loop
+            // which will always evaluate to false.
+            return false
+        }
+
         var current: VirtualFile? = file
+        var prev: VirtualFile = file
         while (current != null) {
-            if (rootFiles.contains(current)) {
+            if (current in rootFiles) {
                 return true
             }
+            prev = current
             current = current.parent
         }
-        return false
+
+        // This is needed because CoreJarVirtualFile.equals compares the identity so
+        // it misses finding a root when the CoreJarVirtualFile instance has changed for
+        // that root. This can happen when multiple KSP executions are running in parallel
+        // because the CoreJarFileSystem instance is shared between all KSP executions,
+        // and each KSP execution clears the file handler cache after it's finished executing.
+        // To fix this, we fall back to checking if the url is in jarRootUrls. We use this only as a
+        // fallback since it can be expensive since CoreJarVirtualFile.getUrl() is not cached.
+        // See https://github.com/google/ksp/issues/3286.
+        return jarRootUrls.isNotEmpty() && // Prevent prev.url from being evaluated if the jarRootUrls set is empty
+            prev.fileSystem is CoreJarFileSystem && // Prevent prev.url from being evaluated if the prev is not from a jar
+            prev.url in jarRootUrls
     }
 
     override fun isSearchInModuleContent(aModule: Module): Boolean = false
