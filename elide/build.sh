@@ -11,7 +11,7 @@
 # Needs `elide` (or $ELIDE), a JDK 21+ ($JAVA_HOME or PATH), curl, unzip, and rclone for publish.
 set -euo pipefail
 
-KOTLIN=2.5.0-Beta2
+KOTLIN=2.5.0-RC
 VERSION=${VERSION:-$KOTLIN-elide.1}
 COROUTINES=1.8.0
 CAFFEINE=3.3.0
